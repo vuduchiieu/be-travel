@@ -21,10 +21,7 @@ const authController = {
       });
       await newUser.save();
 
-      const accessToken = jwt.sign(
-        { id: newUser._id, username: newUser.username },
-        process.env.JWT_ACCESS_KEY
-      );
+      const accessToken = jwt.sign({ newUser }, process.env.JWT_ACCESS_KEY);
       res.json(accessToken);
     } catch (error) {
       console.error(error);
