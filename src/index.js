@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import morgan from "morgan";
 
-import authRouter from "./routes/authRoute";
+import authRouter from "./routes/authRoute.js";
 
 dotenv.config();
 const app = express();
