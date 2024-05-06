@@ -25,7 +25,7 @@ const authController = {
       res.json(accessToken);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Lỗi máy chủ " });
     }
   },
   login: async (req, res) => {
@@ -35,18 +35,19 @@ const authController = {
         $or: [{ username }, { email }],
       });
       if (!user) {
-        res.status(404).json("username hoặc email không hợp lệ!");
+        res.status(404).json("username hoặc email chưa tồn tại!");
         return;
       }
       const password = await bcrypt.compare(req.body.password, user.password);
       if (!password) {
         res.status(404).json("password không hợp lệ!");
+        return;
       }
       const accessToken = jwt.sign({ user }, process.env.JWT_ACCESS_KEY);
       res.json(accessToken);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Lỗi máy chủ " });
     }
   },
 };
