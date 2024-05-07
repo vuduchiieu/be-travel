@@ -4,6 +4,23 @@ import bcrypt from "bcrypt";
 import User from "../models/user.js";
 
 const authController = {
+  loginGoogle: async (req, res) => {
+    const { email, name, image, provider, providerAccountId } = req.body;
+    const accoutGoogle = await User.findOne({ providerAccountId });
+
+    if (accoutGoogle) {
+      return res.json(accoutGoogle);
+    }
+    const newUser = await new User({
+      email,
+      name,
+      image,
+      provider,
+      providerAccountId,
+    });
+    await newUser.save();
+    res.json(newUser);
+  },
   register: async (req, res) => {
     const { username, password } = req.body;
     try {
