@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 import authRouter from "./routes/authRoute.js";
 import userRouter from "./routes/userRoute.js";
+import postRoute from "./routes/postRoute.js";
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,7 @@ app.use(morgan("combined"));
 
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
+app.use("/v1/post", postRoute);
 
 mongoose
   .connect(process.env.MONGODB)

@@ -3,17 +3,15 @@ import jwt from "jsonwebtoken";
 const middlewareController = {
   verifyToken: (req, res, next) => {
     const token = req.header.token;
-    if (token) {
-      const accessToken = token.split(" ")[1];
-      jwt.verify(accessToken, process.env.JWT_ACCESS_KEY, (err, user) => {
-        if (err) {
-          res.status(403).json("Token đã hết hạn");
-        }
-        req.user = user;
-        next();
-      });
-    } else {
-      res.status(401).json("Bạn chưa đăng nhập");
+    if (!token) {
+      return res.status(401).json({ error: "Token không được cung cấp" });
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.status(403).json({ error: "Token không hợp lệ" });
     }
   },
 };

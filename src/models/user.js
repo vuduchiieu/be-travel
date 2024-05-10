@@ -8,10 +8,13 @@ const userSchema = new mongoose.Schema(
     image: String,
     provider: String,
     providerAccountId: String,
+    story: String,
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+    watching: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
