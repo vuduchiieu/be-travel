@@ -62,10 +62,17 @@ const postController = {
   },
   deletePost: async (req, res) => {
     const postId = req.params.id;
+    const author = req.params.id;
     try {
       const post = await Post.findById(postId);
       if (!post) {
         return res.status(404).json({ message: "Bài viết không tồn tại" });
+      }
+      if (!author) {
+        return res.status(404).json({ message: "Tác giả không tồn tại" });
+      }
+      if (postId.author !== author) {
+        return res.status(404).json({ message: "Bạn không có quyền xoá" });
       }
 
       if (post.image) {
