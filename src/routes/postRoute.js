@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { middlewareController } from "../controllers/middlewareController.js";
 import postController from "../controllers/postController.js";
 import { uploader } from "../utils/uploader.js";
 

@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import { cloudinary } from "../utils/uploader.js";
 
 const useController = {
   getAllUser: async (req, res) => {
@@ -37,6 +38,39 @@ const useController = {
       return res
         .status(500)
         .json({ error: "Có lỗi xảy ra khi tìm kiếm người dùng" });
+    }
+  },
+  updateUser: async (req, res) => {
+    const userId = req.params.id;
+    const file = req.file;
+    try {
+      const user = await User.findById(userId);
+      if (file) {
+        if (user.image[0]?._id) {
+          await cloudinary.uploader.destroy(user.image[0]?._id);
+          console.log("daxoas");
+        }
+        const dataUrl = `data:${file.mimetype};base64,${file.buffer?.toString(
+          "base64"
+        )}`;
+
+        const fileName = file.originalname.split(".")[0];
+
+        const uploaded = await cloudinary.uploader.upload(dataUrl, {
+          public_id: fileName,
+          resource_type: "auto",
+        });
+        user.image = { url: uploaded.url };
+      }
+
+      if (!user) {
+        return res.status(404).json({ error: "Người dùng không tồn tại" });
+      }
+      await user.save();
+      res.json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };
