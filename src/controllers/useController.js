@@ -84,8 +84,12 @@ const useController = {
     const userId = req.params.id;
     try {
       const user = await User.findById(userId);
-      const publicId = user.image.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
+
+      if (user.image) {
+        const publicId = user.image.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+
       if (!user) {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
