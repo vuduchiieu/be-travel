@@ -42,6 +42,7 @@ const postController = {
       const skip = (page - 1) * pageSize;
       const limit = pageSize;
       const posts = await Post.find({})
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .limit()
@@ -56,6 +57,29 @@ const postController = {
         totalPages: Math.ceil(totalPosts / pageSize),
       });
     } catch (err) {
+      return res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+  },
+  deletePost: async (req, res) => {
+    const postId = req.params.id;
+    try {
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Bài viết không tồn tại" });
+      }
+
+      if (post.image) {
+        for (let i = 0; i < post.image.length; i++) {
+          const publicId = post.image[i]._id;
+          await cloudinary.uploader.destroy(publicId);
+          console.log("daxoa");
+        }
+      }
+
+      await post.deleteOne();
+      return res.status(200).json("bài viết đã được xóa");
+    } catch (error) {
+      console.log(error);
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },

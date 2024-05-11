@@ -5,7 +5,7 @@ const postSchema = new mongoose.Schema(
     title: String,
     image: [{ url: String }],
     milestone: String,
-    isPublic: String,
+    isPublic: Boolean,
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -6,5 +6,6 @@ const postRoute = Router();
 
 postRoute.post("/:id", uploader.array("images", 5), postController.createPost);
 postRoute.get("/", postController.getAllPosts);
+postRoute.delete("/:id", postController.deletePost);
 
 export default postRoute;
