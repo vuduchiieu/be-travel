@@ -20,33 +20,9 @@ const authController = {
     await newUser.save();
     res.json(newUser);
   },
-  register: async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(password, salt);
-      // const user = await User.findOne({
-      //   email,
-      // });
 
-      // if (email === user.email) {
-      //   return res
-      //     .status(400)
-      //     .json({ error: "Người dùng đã tồn tại, vui lòng đăng nhập" });
-      // }
-      const newUser = await new User({
-        username,
-        password: hashed,
-      });
-      await newUser.save();
-      res.json(email);
-    } catch (error) {
-      res.status(500).json({ error: "Lỗi máy chủ" });
-    }
-  },
   login: async (req, res) => {
     const { email, password } = req.body;
-
     try {
       const user = await User.findOne({
         email,
@@ -62,10 +38,34 @@ const authController = {
         res.status(404).json("Mật khẩu không hợp lệ");
         return;
       }
-      res.json({ user });
+      user.password = undefined;
+      res.json(user);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Lỗi máy chủ" });
+    }
+  },
+  register: async (req, res) => {
+    const { password, email } = req.body;
+    try {
+      const user = await User.findOne({ email });
+
+      const salt = await bcrypt.genSalt(10);
+      const hashed = await bcrypt.hash(password, salt);
+
+      if (user) {
+        return res.status(400).json({ error: "Người dùng đã tồn tại" });
+      }
+      const newUser = await new User({
+        email,
+        password: hashed,
+      });
+      await newUser.save();
+
+      res.json(newUser);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };
