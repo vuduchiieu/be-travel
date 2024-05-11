@@ -14,15 +14,14 @@ const useController = {
         .select("-password")
         .exec();
       const totalUsers = await User.countDocuments();
-      res.status(200).json({
+      return res.status(200).json({
         data: users,
         page,
         pageSize,
         totalPages: Math.ceil(totalUsers / pageSize),
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Lỗi server" });
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
   getUser: async (req, res) => {
@@ -30,14 +29,13 @@ const useController = {
     try {
       const user = await User.findOne({ providerAccountId: id });
       if (!user) {
-        return res.status(404).json({ error: "Người dùng không tồn tại" });
+        return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
-      return res.json(user);
+      return res.status(200).json(user);
     } catch (error) {
-      console.error("Error while fetching user:", error);
       return res
         .status(500)
-        .json({ error: "Có lỗi xảy ra khi tìm kiếm người dùng" });
+        .json({ message: "Có lỗi xảy ra khi tìm kiếm người dùng" });
     }
   },
   updateUser: async (req, res) => {
@@ -47,13 +45,12 @@ const useController = {
     try {
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({ error: "Người dùng không tồn tại" });
+        return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
       if (file) {
         if (user.image) {
           const publicId = user.image.split("/").pop().split(".")[0];
           await cloudinary.uploader.destroy(publicId);
-          console.log("daxoas");
         }
         const dataUrl = `data:${file.mimetype};base64,${file.buffer?.toString(
           "base64"
@@ -78,10 +75,24 @@ const useController = {
       }
 
       await user.save();
-      res.json(user);
+      return res.status(200).json(user);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+  },
+  deleteUser: async (req, res) => {
+    const userId = req.params.id;
+    try {
+      const user = await User.findById(userId);
+      const publicId = user.image.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+      if (!user) {
+        return res.status(404).json({ message: "Người dùng không tồn tại" });
+      }
+      await user.deleteOne();
+      return res.status(200).json("Người dùng đã được xóa");
+    } catch (error) {
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
 };

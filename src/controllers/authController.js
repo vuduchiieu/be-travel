@@ -8,7 +8,7 @@ const authController = {
     const accoutGoogle = await User.findOne({ providerAccountId });
 
     if (accoutGoogle) {
-      return res.json(accoutGoogle);
+      return res.status(200).json(accoutGoogle);
     }
     const newUser = await new User({
       email,
@@ -18,7 +18,7 @@ const authController = {
       providerAccountId,
     });
     await newUser.save();
-    res.json(newUser);
+    return res.status(200).json(newUser);
   },
 
   login: async (req, res) => {
@@ -28,21 +28,18 @@ const authController = {
         email,
       });
       if (!user) {
-        res
-          .status(404)
-          .json("Tên người dùng, email hoặc số điện thoại chưa tồn tại");
-        return;
+        return res.status(404).json({
+          message: "Tên người dùng, email hoặc số điện thoại chưa tồn tại",
+        });
       }
       const comparePassword = await bcrypt.compare(password, user.password);
       if (!comparePassword) {
-        res.status(404).json("Mật khẩu không hợp lệ");
-        return;
+        return res.status(404).json({ message: "Mật khẩu không hợp lệ" });
       }
       user.password = undefined;
-      res.json(user);
+      return res.status(200).json(user);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Lỗi máy chủ" });
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
   register: async (req, res) => {
@@ -54,18 +51,17 @@ const authController = {
       const hashed = await bcrypt.hash(password, salt);
 
       if (user) {
-        return res.status(400).json({ error: "Người dùng đã tồn tại" });
+        return res.status(400).json({ message: "Người dùng đã tồn tại" });
       }
       const newUser = await new User({
         email,
         password: hashed,
       });
-      await newUser.save();
 
-      res.json(newUser);
+      await newUser.save();
+      return res.status(200).json(newUser);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
 };

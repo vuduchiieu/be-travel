@@ -7,5 +7,6 @@ const userRouter = Router();
 userRouter.get("/", useController.getAllUser);
 userRouter.get("/:id", useController.getUser);
 userRouter.put("/:id", uploader.single("images"), useController.updateUser);
+userRouter.delete("/:id", useController.deleteUser);
 
 export default userRouter;

@@ -30,11 +30,9 @@ const postController = {
         isPublic,
       });
       await newPost.save();
-
-      res.status(201).json(newPost);
+      return res.status(201).json(newPost);
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Không thể tạo bài đăng" });
+      return res.status(500).json({ message: "Không thể tạo bài đăng" });
     }
   },
   getAllPosts: async (req, res) => {
@@ -51,15 +49,14 @@ const postController = {
         .exec();
       const totalPosts = await Post.countDocuments();
 
-      res.status(200).json({
+      return res.status(200).json({
         data: posts,
         page,
         pageSize,
         totalPages: Math.ceil(totalPosts / pageSize),
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Lỗi server" });
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
 };
