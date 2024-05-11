@@ -1,6 +1,5 @@
 import { Post } from "../models/posts.js";
 import { cloudinary } from "../utils/uploader.js";
-import User from "../models/user.js";
 
 const postController = {
   createPost: async (req, res) => {
@@ -44,26 +43,16 @@ const postController = {
       const pageSize = parseInt(req.query.pageSize) || 10;
       const skip = (page - 1) * pageSize;
       const limit = pageSize;
-      const posts = await Post.find({}).skip(skip).limit(limit).exec();
+      const posts = await Post.find({})
+        .skip(skip)
+        .limit(limit)
+        .limit()
+        .populate("author")
+        .exec();
       const totalPosts = await Post.countDocuments();
 
-      const AllPosts = [];
-
-      for (const post of posts) {
-        const author = await User.findById(post.author);
-        const postWithAuthor = {
-          post: post,
-          author: {
-            image: author.image,
-            name: author.name,
-            email: author.email,
-          },
-        };
-        AllPosts.push(postWithAuthor);
-      }
-
       res.status(200).json({
-        data: AllPosts,
+        data: posts,
         page,
         pageSize,
         totalPages: Math.ceil(totalPosts / pageSize),

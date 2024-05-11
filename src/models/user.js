@@ -5,12 +5,12 @@ const userSchema = new mongoose.Schema(
     email: String,
     name: String,
     password: String,
-    image: { url: String },
+    image: String,
     provider: String,
     providerAccountId: String,
     story: String,
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
-    watching: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    watching: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

@@ -43,11 +43,16 @@ const useController = {
   updateUser: async (req, res) => {
     const userId = req.params.id;
     const file = req.file;
+    const { email, story, name } = req.body;
     try {
       const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "Người dùng không tồn tại" });
+      }
       if (file) {
-        if (user.image[0]?._id) {
-          await cloudinary.uploader.destroy(user.image[0]?._id);
+        if (user.image) {
+          const publicId = user.image.split("/").pop().split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
           console.log("daxoas");
         }
         const dataUrl = `data:${file.mimetype};base64,${file.buffer?.toString(
@@ -60,12 +65,18 @@ const useController = {
           public_id: fileName,
           resource_type: "auto",
         });
-        user.image = { url: uploaded.url };
+        user.image = uploaded.url;
+      }
+      if (story) {
+        user.story = story;
+      }
+      if (name) {
+        user.name = name;
+      }
+      if (email) {
+        user.email = email;
       }
 
-      if (!user) {
-        return res.status(404).json({ error: "Người dùng không tồn tại" });
-      }
       await user.save();
       res.json(user);
     } catch (error) {

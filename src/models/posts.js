@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const postSchema = new mongoose.Schema(
   {
     title: String,
-    image: { url: String },
+    image: [{ url: String }],
     milestone: String,
     isPublic: String,
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
     },
   },
   { timestamps: true }
@@ -17,8 +17,8 @@ const postSchema = new mongoose.Schema(
 const commentSchema = new mongoose.Schema(
   {
     content: String,
-    post: { type: mongoose.Schema.Types.ObjectId, ref: "posts" },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+    post: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
   },
   { timestamps: true }
 );
@@ -27,12 +27,12 @@ const likeSchema = new mongoose.Schema(
   {
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "posts",
+      ref: "Post",
       required: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
     },
   },
