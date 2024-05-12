@@ -1,4 +1,4 @@
-import User from "../models/user.js";
+import { User } from "../models/user.js";
 import { cloudinary } from "../utils/uploader.js";
 
 const useController = {

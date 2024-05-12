@@ -7,6 +7,8 @@ import morgan from "morgan";
 import authRouter from "./routes/authRoute.js";
 import userRouter from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
+import commentRoute from "./routes/commentRoute.js";
+import likeRoute from "./routes/likeRoute.js";
 
 dotenv.config();
 const app = express();
@@ -18,6 +20,8 @@ app.use(morgan("combined"));
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/post", postRoute);
+app.use("/v1/comment", commentRoute);
+app.use("/v1/like", likeRoute);
 
 mongoose
   .connect(process.env.MONGODB)

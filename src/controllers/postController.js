@@ -47,6 +47,8 @@ const postController = {
         .limit(limit)
         .limit()
         .populate("author")
+        .populate("like")
+        .populate("comment")
         .exec();
       const totalPosts = await Post.countDocuments();
 
