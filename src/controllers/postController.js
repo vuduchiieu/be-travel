@@ -57,6 +57,9 @@ const postController = {
         .populate({
           path: "comment",
           populate: { path: "user" },
+        })
+        .populate({
+          path: "comment",
           populate: { path: "post" },
         })
         .exec();
