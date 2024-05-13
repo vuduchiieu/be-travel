@@ -4,10 +4,12 @@ import { cloudinary } from "../utils/uploader.js";
 const postController = {
   createPost: async (req, res) => {
     try {
-      const { title, milestone, isPublic } = req.body;
+      const { title, isPublic } = req.body;
       const author = req.params.id;
       const imgFile = req.files;
-
+      if (!title) {
+        return res.status(404).json({ message: "Tiêu đề là bắt buộc!" });
+      }
       const image = [];
 
       for (const file of imgFile) {
@@ -26,12 +28,13 @@ const postController = {
         title,
         image,
         author,
-        milestone,
         isPublic,
       });
+
       await newPost.save();
       return res.status(201).json(newPost);
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ message: "Không thể tạo bài đăng" });
     }
   },
@@ -62,9 +65,39 @@ const postController = {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
+  getPostbyId: async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 10;
+      const skip = (page - 1) * pageSize;
+      const limit = pageSize;
+      const posts = await Post.find({ author: userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .limit()
+        .populate("author")
+        .populate("like")
+        .populate("comment")
+        .exec();
+
+      const totalPosts = await Post.countDocuments({ author: userId });
+
+      return res.status(200).json({
+        data: posts,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalPosts / pageSize),
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+  },
   deletePost: async (req, res) => {
     const postId = req.params.id;
-    const author = req.params.id;
+    const author = req.params.author;
+
     try {
       const post = await Post.findById(postId);
       if (!post) {
@@ -73,7 +106,9 @@ const postController = {
       if (!author) {
         return res.status(404).json({ message: "Tác giả không tồn tại" });
       }
-      if (postId.author !== author) {
+
+      console.log("author postid", post.author);
+      if (post.author != author) {
         return res.status(404).json({ message: "Bạn không có quyền xoá" });
       }
 
