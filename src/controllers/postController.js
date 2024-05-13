@@ -50,8 +50,14 @@ const postController = {
         .limit(limit)
         .limit()
         .populate("author")
-        .populate("like")
-        .populate("comment")
+        .populate({
+          path: "like",
+          populate: { path: "user" },
+        })
+        .populate({
+          path: "comment",
+          populate: { path: "user" },
+        })
         .exec();
       const totalPosts = await Post.countDocuments();
 
@@ -106,8 +112,6 @@ const postController = {
       if (!author) {
         return res.status(404).json({ message: "Tác giả không tồn tại" });
       }
-
-      console.log("author postid", post.author);
       if (post.author != author) {
         return res.status(404).json({ message: "Bạn không có quyền xoá" });
       }
