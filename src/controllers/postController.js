@@ -57,6 +57,7 @@ const postController = {
         .populate({
           path: "comment",
           populate: { path: "user" },
+          populate: { path: "post" },
         })
         .exec();
       const totalPosts = await Post.countDocuments();
