@@ -14,6 +14,8 @@ const useController = {
         .select("-password")
         .exec();
       const totalUsers = await User.countDocuments();
+      users.password = undefined;
+
       return res.status(200).json({
         data: users,
         page,
@@ -31,6 +33,7 @@ const useController = {
       if (!user) {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
+      user.password = undefined;
       return res.status(200).json(user);
     } catch (error) {
       return res
@@ -45,6 +48,7 @@ const useController = {
       if (!user) {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
+      user.password = undefined;
       return res.status(200).json(user);
     } catch (error) {
       return res
