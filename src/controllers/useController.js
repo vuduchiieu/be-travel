@@ -1,5 +1,6 @@
 import { User } from "../models/user.js";
 import { cloudinary } from "../utils/uploader.js";
+import removeAccents from "remove-accents";
 
 const useController = {
   getAllUser: async (req, res) => {
@@ -32,7 +33,9 @@ const useController = {
       const pageSize = parseInt(req.query.pageSize) || 10;
       const skip = (page - 1) * pageSize;
       const limit = pageSize;
-      const searchQuery = req.query.q || "";
+      let query = req.query.q;
+      query = removeAccents(query);
+      const searchQuery = query || "";
 
       const searchCondition = {
         $or: [
