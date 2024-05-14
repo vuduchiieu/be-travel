@@ -26,6 +26,38 @@ const useController = {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
+  searchUser: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 10;
+      const skip = (page - 1) * pageSize;
+      const limit = pageSize;
+      const searchQuery = req.query.q || "";
+
+      const searchCondition = {
+        $or: [
+          { name: { $regex: searchQuery, $options: "i" } },
+          { email: { $regex: searchQuery, $options: "i" } },
+        ],
+      };
+      const users = await User.find(searchCondition)
+        .skip(skip)
+        .limit(limit)
+        .select("-password")
+        .exec();
+
+      const totalUsers = await User.countDocuments(searchCondition);
+
+      return res.status(200).json({
+        data: users,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalUsers / pageSize),
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+  },
   getUser: async (req, res) => {
     const id = req.params.id;
     try {

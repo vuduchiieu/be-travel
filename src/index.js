@@ -9,6 +9,7 @@ import userRouter from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
 import commentRoute from "./routes/commentRoute.js";
 import likeRoute from "./routes/likeRoute.js";
+import searchRouter from "./routes/searchRoute.js";
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.use("/v1/user", userRouter);
 app.use("/v1/post", postRoute);
 app.use("/v1/comment", commentRoute);
 app.use("/v1/like", likeRoute);
+app.use("/v1/search", searchRouter);
 
 mongoose
   .connect(process.env.MONGODB)
