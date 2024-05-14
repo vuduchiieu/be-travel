@@ -38,10 +38,10 @@ const useController = {
         .json({ message: "Có lỗi xảy ra khi tìm kiếm người dùng" });
     }
   },
-  getUserById: async (req, res) => {
-    const id = req.params.id;
+  getUserByEmail: async (req, res) => {
+    const email = req.params.email;
     try {
-      const user = await User.findById(id);
+      const user = await User.findOne({ email: email });
       if (!user) {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
