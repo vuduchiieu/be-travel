@@ -88,8 +88,18 @@ const postController = {
         .limit(limit)
         .limit()
         .populate("author")
-        .populate("like")
-        .populate("comment")
+        .populate({
+          path: "like",
+          populate: { path: "user" },
+        })
+        .populate({
+          path: "comment",
+          populate: { path: "user" },
+        })
+        .populate({
+          path: "comment",
+          populate: { path: "post" },
+        })
         .exec();
 
       const totalPosts = await Post.countDocuments({ author: userId });
