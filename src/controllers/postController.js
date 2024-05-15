@@ -1,5 +1,6 @@
 import { Post } from "../models/posts.js";
 import { cloudinary } from "../utils/uploader.js";
+import jwt from "jsonwebtoken";
 
 const postController = {
   createPost: async (req, res) => {
@@ -32,7 +33,7 @@ const postController = {
       });
 
       await newPost.save();
-      return res.status(201).json(newPost);
+      return res.status(201).json("Tạo bài đăng thành công");
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Không thể tạo bài đăng" });
@@ -65,13 +66,19 @@ const postController = {
         .exec();
       const totalPosts = await Post.countDocuments();
 
-      return res.status(200).json({
-        data: posts,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalPosts / pageSize),
-      });
+      const accessToken = jwt.sign(
+        {
+          data: posts,
+          page,
+          pageSize,
+          totalPages: Math.ceil(totalPosts / pageSize),
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+
+      return res.status(200).json(accessToken);
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
@@ -104,12 +111,17 @@ const postController = {
 
       const totalPosts = await Post.countDocuments({ author: userId });
 
-      return res.status(200).json({
-        data: posts,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalPosts / pageSize),
-      });
+      const accessToken = jwt.sign(
+        {
+          data: posts,
+          page,
+          pageSize,
+          totalPages: Math.ceil(totalPosts / pageSize),
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+
+      return res.status(200).json(accessToken);
     } catch (err) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }

@@ -1,5 +1,6 @@
 import { Comment } from "../models/comment.js";
 import { Post } from "../models/posts.js";
+import jwt from "jsonwebtoken";
 
 const commentController = {
   createComment: async (req, res) => {
@@ -25,7 +26,9 @@ const commentController = {
 
       await Post.findByIdAndUpdate(postId, { $push: { comment } });
 
-      return res.status(201).json(comment);
+      const accessToken = jwt.sign({ comment }, process.env.JWT_ACCESS_KEY);
+
+      return res.status(200).json(accessToken);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Lỗi máy chủ" });

@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 
 import { User } from "../models/user.js";
+import jwt from "jsonwebtoken";
 
 const authController = {
   loginGoogle: async (req, res) => {
@@ -8,7 +9,13 @@ const authController = {
     const accoutGoogle = await User.findOne({ providerAccountId });
 
     if (accoutGoogle) {
-      return res.status(200).json(accoutGoogle);
+      const accessToken = jwt.sign(
+        {
+          accoutGoogle,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     }
     const newUser = await new User({
       email,
@@ -18,7 +25,13 @@ const authController = {
       providerAccountId,
     });
     await newUser.save();
-    return res.status(200).json(newUser);
+    const accessToken = jwt.sign(
+      {
+        newUser,
+      },
+      process.env.JWT_ACCESS_KEY
+    );
+    return res.status(200).json(accessToken);
   },
 
   login: async (req, res) => {
@@ -37,7 +50,13 @@ const authController = {
         return res.status(404).json({ message: "Mật khẩu không hợp lệ" });
       }
       user.password = undefined;
-      return res.status(200).json(user);
+      const accessToken = jwt.sign(
+        {
+          user,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     } catch (error) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
@@ -59,7 +78,13 @@ const authController = {
       });
 
       await newUser.save();
-      return res.status(200).json(newUser);
+      const accessToken = jwt.sign(
+        {
+          newUser,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     } catch (error) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }

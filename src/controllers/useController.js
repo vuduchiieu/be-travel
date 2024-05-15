@@ -1,6 +1,7 @@
 import { User } from "../models/user.js";
 import { cloudinary } from "../utils/uploader.js";
 import removeAccents from "remove-accents";
+import jwt from "jsonwebtoken";
 
 const useController = {
   getAllUser: async (req, res) => {
@@ -17,12 +18,17 @@ const useController = {
       const totalUsers = await User.countDocuments();
       users.password = undefined;
 
-      return res.status(200).json({
-        data: users,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalUsers / pageSize),
-      });
+      const accessToken = jwt.sign(
+        {
+          data: users,
+          page,
+          pageSize,
+          totalPages: Math.ceil(totalUsers / pageSize),
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+
+      return res.status(200).json(accessToken);
     } catch (err) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
@@ -51,12 +57,17 @@ const useController = {
 
       const totalUsers = await User.countDocuments(searchCondition);
 
-      return res.status(200).json({
-        data: users,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalUsers / pageSize),
-      });
+      const accessToken = jwt.sign(
+        {
+          data: users,
+          page,
+          pageSize,
+          totalPages: Math.ceil(totalUsers / pageSize),
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+
+      return res.status(200).json(accessToken);
     } catch (err) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
@@ -69,13 +80,20 @@ const useController = {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
       user.password = undefined;
-      return res.status(200).json(user);
+      const accessToken = jwt.sign(
+        {
+          user,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     } catch (error) {
       return res
         .status(500)
         .json({ message: "Có lỗi xảy ra khi tìm kiếm người dùng" });
     }
   },
+
   getUserByEmail: async (req, res) => {
     const email = req.params.email;
     try {
@@ -84,7 +102,13 @@ const useController = {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
       user.password = undefined;
-      return res.status(200).json(user);
+      const accessToken = jwt.sign(
+        {
+          user,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     } catch (error) {
       return res
         .status(500)
@@ -128,7 +152,13 @@ const useController = {
       }
 
       await user.save();
-      return res.status(200).json(user);
+      const accessToken = jwt.sign(
+        {
+          user,
+        },
+        process.env.JWT_ACCESS_KEY
+      );
+      return res.status(200).json(accessToken);
     } catch (error) {
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
