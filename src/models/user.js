@@ -9,8 +9,10 @@ const userSchema = new mongoose.Schema(
     provider: String,
     providerAccountId: String,
     story: String,
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    watching: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    follower: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
   },
   { timestamps: true }
 );

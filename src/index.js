@@ -10,6 +10,7 @@ import postRoute from "./routes/postRoute.js";
 import commentRoute from "./routes/commentRoute.js";
 import likeRoute from "./routes/likeRoute.js";
 import searchRouter from "./routes/searchRoute.js";
+import followerRoute from "./routes/followerRoute.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use("/v1/post", postRoute);
 app.use("/v1/comment", commentRoute);
 app.use("/v1/like", likeRoute);
 app.use("/v1/search", searchRouter);
+app.use("/v1/follower", followerRoute);
 
 mongoose
   .connect(process.env.MONGODB)
