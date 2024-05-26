@@ -4,28 +4,37 @@ const followerController = {
   followUser: async (req, res) => {
     try {
       const { userIdFollowing, userIdFollower } = req.params;
-      const following = await User.findById(userIdFollowing);
-      const follower = await User.findById(userIdFollower);
-
-      console.log("follower", follower);
-
-      if (!following || !follower) {
-        throw new Error("Không tìm thấy người dùng");
+      if (!userIdFollowing || !userIdFollower) {
+        return res.status(404).json({ message: "Không tìm thấy người dùng" });
       }
 
-      if (follower.follower.includes(userIdFollowing)) {
-        throw new Error("Người dùng đã được theo dõi trước đó");
+      const user = await User.findById(userIdFollowing);
+
+      if (user.following.includes(userIdFollower)) {
+        await User.findByIdAndUpdate(userIdFollowing, {
+          $pull: { following: userIdFollower },
+        });
+        await User.findByIdAndUpdate(userIdFollower, {
+          $pull: { followers: userIdFollowing },
+        });
+        return res
+          .status(200)
+          .json(`${userIdFollowing} Unfollow ${userIdFollower} thành công!`);
       }
 
-      following.follower.watching.push(userIdFollower);
-      follower.follower.followers.push(userIdFollowing);
+      await User.findByIdAndUpdate(userIdFollowing, {
+        $push: { following: userIdFollower },
+      });
+      await User.findByIdAndUpdate(userIdFollower, {
+        $push: { followers: userIdFollowing },
+      });
 
-      await following.save();
-      await follower.save();
-
-      return { success: true, message: "Đã theo dõi người dùng thành công" };
+      return res
+        .status(201)
+        .json(`${userIdFollowing} Follow ${userIdFollower} thành công!`);
     } catch (error) {
       console.log(error);
+      return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
 };

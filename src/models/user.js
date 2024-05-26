@@ -9,10 +9,8 @@ const userSchema = new mongoose.Schema(
     provider: String,
     providerAccountId: String,
     story: String,
-    follower: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

@@ -14,7 +14,16 @@ const useController = {
         .skip(skip)
         .limit(limit)
         .select("-password")
+        .populate({
+          path: "following",
+          select: "_id email name image",
+        })
+        .populate({
+          path: "followers",
+          select: "_id email name image",
+        })
         .exec();
+
       const totalUsers = await User.countDocuments();
       users.password = undefined;
 
@@ -30,6 +39,7 @@ const useController = {
 
       return res.status(200).json(accessToken);
     } catch (err) {
+      console.log(err);
       return res.status(500).json({ message: "Lỗi máy chủ" });
     }
   },
@@ -53,6 +63,14 @@ const useController = {
         .skip(skip)
         .limit(limit)
         .select("-password")
+        .populate({
+          path: "following",
+          select: "_id email name image",
+        })
+        .populate({
+          path: "followers",
+          select: "_id email name image",
+        })
         .exec();
 
       const totalUsers = await User.countDocuments(searchCondition);
@@ -75,7 +93,15 @@ const useController = {
   getUser: async (req, res) => {
     const id = req.params.id;
     try {
-      const user = await User.findOne({ providerAccountId: id });
+      const user = await User.findOne({ providerAccountId: id })
+        .populate({
+          path: "following",
+          select: "_id email name image",
+        })
+        .populate({
+          path: "followers",
+          select: "_id email name image",
+        });
       if (!user) {
         return res.status(404).json({ message: "Người dùng không tồn tại" });
       }
