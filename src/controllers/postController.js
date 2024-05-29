@@ -76,7 +76,12 @@ const postController = {
         process.env.JWT_ACCESS_KEY
       );
 
-      return res.status(200).json(accessToken);
+      return res.status(200).json({
+        data: posts,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalPosts / pageSize),
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ message: "Lỗi máy chủ" });
