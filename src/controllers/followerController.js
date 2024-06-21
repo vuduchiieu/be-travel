@@ -17,9 +17,7 @@ const followerController = {
         await User.findByIdAndUpdate(userIdFollower, {
           $pull: { followers: userIdFollowing },
         });
-        return res
-          .status(200)
-          .json(`${userIdFollowing} Unfollow ${userIdFollower} thành công!`);
+        return res.status(200).json({ message: "Đã bỏ theo dõi" });
       }
 
       await User.findByIdAndUpdate(userIdFollowing, {
@@ -29,9 +27,7 @@ const followerController = {
         $push: { followers: userIdFollowing },
       });
 
-      return res
-        .status(201)
-        .json(`${userIdFollowing} Follow ${userIdFollower} thành công!`);
+      return res.status(201).json({ message: "Đã theo dõi" });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Lỗi máy chủ" });
